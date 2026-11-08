@@ -1,0 +1,28 @@
+name: Android APK
+on:
+  push: { branches: [main] }
+  workflow_dispatch:
+permissions: { contents: write }
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - uses: android-actions/setup-android@v3
+      - run: npm install
+      - run: npx cap add android
+      - run: npx @capacitor/assets generate --android --iconBackgroundColor '#24543E' --splashBackgroundColor '#FBFBF9' || true
+      - run: npx cap sync android
+      - name: Build APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+      - run: cp android/app/build/outputs/apk/debug/app-debug.apk SagradaBiblia.apk
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Sagrada Biblia 1.0.${{ github.run_number }}
+          files: SagradaBiblia.apk

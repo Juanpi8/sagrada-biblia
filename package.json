@@ -1,0 +1,16 @@
+{
+  "name": "sagrada-biblia",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Biblia católica, protestante y ortodoxa, sin anuncios y sin conexión.",
+  "scripts": { "sync": "cap sync android" },
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor-community/text-to-speech": "^6.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^7.0.0"
+  }
+}

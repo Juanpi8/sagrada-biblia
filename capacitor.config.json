@@ -1,0 +1,6 @@
+{
+  "appId": "uy.juanpi.sagradabiblia",
+  "appName": "Sagrada Biblia",
+  "webDir": "www",
+  "android": { "backgroundColor": "#FBFBF9" }
+}
