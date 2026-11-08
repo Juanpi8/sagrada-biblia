@@ -21,7 +21,9 @@ jobs:
       - name: Native voice engine (sherpa-onnx)
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
-          REL=$(curl -sfL -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/k2-fsa/sherpa-onnx/releases/latest)
+          # Pinned to 1.x: from 2.0 the VITS/Piper espeak-ng phonemizer (dataDir) is ignored and Piper voices produce no audio.
+          SHERPA_TAG=v1.13.5
+          REL=$(curl -sfL -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/k2-fsa/sherpa-onnx/releases/tags/$SHERPA_TAG)
           TAG=$(echo "$REL" | jq -r .tag_name); echo "sherpa-onnx $TAG"
           echo "$REL" | jq -r '.assets[].name' | grep -iE 'aar|android' | head -20
           URL=$(echo "$REL" | jq -r '.assets[] | select(.name|test("^sherpa-onnx-[0-9.]+\\.aar$")) | .browser_download_url' | head -1)
