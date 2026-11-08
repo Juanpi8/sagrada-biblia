@@ -115,7 +115,7 @@ class PiperNativePlugin : Plugin() {
                 call.resolve()
             } catch (ex: Exception) {
                 tmp.delete(); voiceDir(id).deleteRecursively()
-                call.reject(ex.message ?: "download failed")
+                call.reject(ex.toString())
             }
         }
     }
@@ -145,7 +145,7 @@ class PiperNativePlugin : Plugin() {
                     tts = OfflineTts(config = cfg); loadedId = id
                 }
                 call.resolve()
-            } catch (ex: Throwable) { call.reject(ex.message ?: "load failed") }
+            } catch (ex: Throwable) { call.reject(ex.toString()) }
         }
     }
 
@@ -193,7 +193,7 @@ class PiperNativePlugin : Plugin() {
                 try { t.stop() } catch (_: Exception) {}
                 t.release(); if (track === t) track = null
                 call.resolve()
-            } catch (ex: Throwable) { call.reject(ex.message ?: "play failed") }
+            } catch (ex: Throwable) { call.reject(ex.toString()) }
         }
     }
 
