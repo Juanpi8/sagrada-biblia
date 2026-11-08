@@ -52,3 +52,6 @@ if not has:
     if not os.path.exists(kt): sys.exit('AAR has no OfflineTts class and Tts.kt was not downloaded')
     d = f'{A}/app/src/main/java/com/k2fsa/sherpa/onnx'; os.makedirs(d, exist_ok=True); shutil.copy(kt, d)
 print(open(app).read())
+# The in-page (WASM) voice runtime is not needed in the Android app: the native engine replaces it.
+for f in glob.glob(f'{A}/app/src/main/assets/public/tts/*'):
+    if not f.endswith('piper.js'): os.remove(f)
