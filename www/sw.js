@@ -1,5 +1,5 @@
 /* Sagrada Biblia — service worker: works offline after first visit. */
-const SHELL='biblia-shell-v2', DATA='biblia-data-v1', FONTS='biblia-fonts-v1';
+const SHELL='biblia-shell-v3', DATA='biblia-data-v1', FONTS='biblia-fonts-v1';
 const SHELL_FILES=['./','index.html','manifest.webmanifest','data/versions.json','data/encyclicals.json','data/apoc/index.json',
   'icons/icon-192.png','icons/icon-512.png','icons/maskable-512.png','icons/apple-touch-icon.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(SHELL).then(c=>c.addAll(SHELL_FILES)).then(()=>self.skipWaiting()));});
@@ -9,7 +9,7 @@ self.addEventListener('fetch',e=>{
   if(e.request.method!=='GET') return;
   if(u.origin===location.origin){
     // Bible data never changes for a given file name: cache first.
-    if(/\/data\/(chunks|notes|apoc|i18n)\//.test(u.pathname)&&!/apoc\/index/.test(u.pathname)){
+    if((/\/data\/(chunks|notes|apoc|i18n)\//.test(u.pathname)||/\/tts\/(?!piper\.js)/.test(u.pathname))&&!/apoc\/index/.test(u.pathname)){
       e.respondWith(caches.open(DATA).then(async c=>{const hit=await c.match(e.request); if(hit) return hit; const r=await fetch(e.request); if(r.ok) c.put(e.request,r.clone()); return r;}));
       return;
     }

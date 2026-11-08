@@ -11,6 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<script src="tts/piper.js" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -74,7 +75,8 @@ nav.nav{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid va
 .nav a[aria-current="page"] svg{stroke-width:2.2}
 
 /* Reader */
-.reader{padding:22px 22px 40px;font-family:var(--serif);font-size:var(--fs);line-height:var(--lh);max-width:68ch;margin:0 auto}
+.reader{padding:16px 16px 40px;font-family:var(--serif);font-size:var(--fs);line-height:var(--lh);max-width:72ch;margin:0 auto}
+@media (min-width:600px){.reader{padding:22px 24px 40px}}
 .reader h2{font-family:var(--serif);font-weight:500;font-size:15px;color:var(--muted);margin:0 0 14px;letter-spacing:.01em}
 .reader .text{hyphens:auto;-webkit-hyphens:auto;text-align:left}
 .dropnum{float:left;font-size:3.3em;line-height:.86;font-weight:600;color:var(--accent);margin:.04em .14em 0 0;font-variant-numeric:lining-nums}
@@ -104,8 +106,8 @@ nav.nav{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid va
 
 /* Verses as separate paragraphs (default) */
 .chnum{font-family:var(--serif);font-weight:600;font-size:2.7em;line-height:1;color:var(--accent);margin:2px 0 10px;font-variant-numeric:lining-nums}
-.sep .vv{display:grid;grid-template-columns:2em 1fr;column-gap:.55em;margin:0 0 .85em;padding:.12em .3em .12em 0;border-radius:6px}
-.sep .vv .n{font-family:var(--sans);font-size:.6em;font-weight:600;color:var(--accent);text-align:end;padding-top:.62em;font-variant-numeric:tabular-nums;user-select:none}
+.sep .vv{display:block;margin:0 -.3em .8em;padding:.08em .3em;border-radius:6px}
+.sep .vv .n{font-family:var(--sans);font-size:.62em;font-weight:700;color:var(--accent);margin-inline-end:.35em;vertical-align:.42em;font-variant-numeric:tabular-nums;user-select:none}
 .sep .vv .t{white-space:pre-line}
 .prose .vv{display:block;margin:0 0 .9em}
 .prose .vv .n{font-family:var(--sans);font-size:.6em;font-weight:600;color:var(--accent);margin-inline-end:.4em;vertical-align:.5em}
@@ -113,7 +115,7 @@ nav.nav{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid va
 .flow .v sup{font-family:var(--sans);font-size:.58em;font-weight:600;color:var(--accent);margin:0 .18em 0 .1em;vertical-align:.55em;line-height:0}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .hd{margin:1.5em 0 .7em;text-wrap:balance}
-.sep .hd{padding-inline-start:2.55em}
+.sep .hd{padding-inline-start:0}
 .hd:first-child{margin-top:.3em}
 .hd.hS{font-family:var(--serif);font-weight:600;font-size:1.04em;line-height:1.35;color:var(--ink)}
 .hd.hM{font-family:var(--sans);font-weight:600;font-size:.74em;letter-spacing:.03em;line-height:1.4;color:var(--muted);margin-bottom:.3em}
@@ -137,6 +139,23 @@ body.has-player .actionbar{bottom:calc(var(--nav-h) + env(safe-area-inset-bottom
 .dl.on{color:var(--accent)}
 .dlw{display:inline-flex;min-width:40px;justify-content:center}
 
+
+.navback{display:inline-flex;align-items:center;gap:2px;font-family:var(--sans);font-size:14px;font-weight:600;color:var(--accent);padding:4px 8px 4px 0;margin-inline-end:8px;vertical-align:middle}
+.navback svg{width:18px;height:18px}
+.navtitle{vertical-align:middle}
+.sheet .sh h3{display:flex;align-items:center;flex-wrap:wrap;min-width:0}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.bgrid button{padding:11px 12px;border-radius:12px;background:var(--surface);text-align:start;font-family:var(--serif);font-size:16px;line-height:1.25}
+.bgrid button.cur{box-shadow:inset 0 0 0 2px var(--accent)}
+.bgrid button.done{background:var(--tint);color:var(--accent)}
+.bgrid button.off{opacity:.45}
+
+.voices{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
+.voice{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;flex-wrap:wrap}
+.voice.on{border-color:var(--accent);background:var(--tint)}
+.voice .main{flex:1;min-width:120px}
+.voice .meta{color:var(--muted);font-size:13px;margin-top:2px}
+.sheet select{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--paper);font-size:16px}
 /* Action bar */
 .actionbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 10px);width:min(740px,calc(100% - 20px));
   background:var(--ink);color:var(--paper);border-radius:16px;padding:8px 8px 8px 14px;display:flex;align-items:center;gap:4px;z-index:20;box-shadow:0 10px 30px rgba(0,0,0,.25)}
@@ -296,7 +315,7 @@ const LANGS={es:'Español',en:'English',la:'Latín',pt:'Português',fr:'Françai
 const LANG_ORDER=['es','en','la','pt','fr','it','de','ru','uk','cu','el','zh','ja','ko','ar','vi'];
 
 /* ---------- i18n (es, en inline; others in data/i18n) ---------- */
-const STR={"es":{"read":"Leer","index":"Índice","saved":"Guardados","enc":"Encíclicas","apoc":"Apócrifos","ot":"Antiguo Testamento","nt":"Nuevo Testamento","otS":"A. T.","ntS":"N. T.","pent":"Pentateuco","hist":"Libros históricos","wis":"Libros sapienciales","poet":"Libros poéticos","proph":"Libros proféticos","major":"Profetas mayores","minor":"Profetas menores","vulgapp":"Apéndice de la Vulgata","orthapp":"Apéndice","gospels":"Evangelios","acts":"Hechos","paul":"Cartas de san Pablo","catholic":"Cartas católicas","apocG":"Profecía","trad_catholic":"Católica","trad_protestant":"Protestante","trad_orthodox":"Ortodoxa","markRead":"Marcar capítulo como leído","isRead":"Capítulo leído","prev":"Anterior","next":"Siguiente","chapter":"Capítulo","chapters":"capítulos","chap1":"capítulo","readN":"leídos","loading":"Cargando…","loadErr":"No se pudo cargar el texto. Revisá tu conexión.","retry":"Reintentar","notIn":"no está en esta traducción","tryOther":"Lo podés leer en:","save":"Guardar","highlight":"Resaltar","unhl":"Quitar","copy":"Copiar","copied":"Copiado","close":"Cerrar","note":"Nota (opcional)","saveBm":"Guardar marcador","bmSaved":"Marcador guardado","continue":"Seguir leyendo","bookmarks":"Marcadores","history":"Leído hace poco","noBm":"Todavía no guardaste nada. Tocá un versículo mientras leés y elegí Guardar.","open":"Abrir","del":"Borrar","total":"Toda la Biblia","searchPh":"Ir a una cita (Jn 3,16) o buscar palabra","go":"Ir","searching":"Buscando","results":"resultados","noRes":"No encontré esa palabra en esta traducción.","moreRes":"Mostrando los primeros 200.","settings":"Ajustes","translation":"Traducción","tradition":"Tradición (canon)","tradHint":"Define qué libros aparecen y en qué orden.","uiLang":"Idioma de la app","size":"Tamaño de letra","theme":"Tema","auto":"Automático","light":"Claro","dark":"Oscuro","flow":"Texto corrido (sin separar versículos)","showHeads":"Mostrar subtítulos","showNotes":"Mostrar notas al pie","autoRead":"Marcar como leído al terminar el capítulo","sync":"Sincronización","syncOn":"Tu progreso se guarda en tu cuenta y se sincroniza entre dispositivos.","syncOff":"Tu progreso se guarda en este dispositivo.","backup":"Copia de seguridad","copyBackup":"Copiar respaldo","restore":"Restaurar","restorePh":"Pegá acá un respaldo copiado antes","restored":"Progreso restaurado","badBackup":"Ese texto no es un respaldo válido.","reset":"Borrar todo el progreso","resetQ":"¿Seguro? Se borran capítulos leídos, marcadores y resaltados.","yesReset":"Sí, borrar","cancel":"Cancelar","resetDone":"Progreso borrado","sources":"Textos y licencias","books":"libros","chooseVersion":"Elegí una traducción","markBook":"Marcar libro como leído","unmarkBook":"Desmarcar libro","goVerse":"Ir a un versículo","encIntro":"Las encíclicas son cartas del Papa a toda la Iglesia. Acá están las que la Santa Sede publica en español, con un resumen. El texto completo se abre en vatican.va.","readOn":"Leer en vatican.va","readDone":"Leída","markEnc":"Marcar leída","pending":"Pendientes","all":"Todas","readF":"Leídas","filterPh":"Filtrar por título o tema","encRead":"encíclicas leídas","apocIntro":"Escritos antiguos que no forman parte del canon católico ni protestante. 1 Henoc y Jubileos sí son canónicos para la Iglesia ortodoxa etíope. Están en inglés, en traducciones clásicas de dominio público.","g_ot":"Antiguo Testamento (pseudoepígrafos)","g_t12":"Testamentos de los Doce Patriarcas","g_gos":"Evangelios apócrifos","g_acts":"Hechos, apocalipsis e himnos","g_af":"Padres Apostólicos","vulgNum":"Salmos con numeración griega (Vulgata).","available":"disponibles en esta traducción","of":"de","season_ord":"Tiempo Ordinario","season_adv":"Adviento","season_xmas":"Navidad","season_lent":"Cuaresma","season_triduum":"Triduo Pascual","season_east":"Pascua","season_pent":"Pentecostés","noteT":"Nota","listen":"Escuchar","listenFrom":"Escuchar desde aquí","play":"Reproducir","pause":"Pausa","stop":"Detener","speed":"Velocidad","voice":"Voz","voiceAuto":"Automática","audio":"Audio","readHeads":"Leer también los subtítulos","autoNext":"Seguir con el capítulo siguiente","noVoice":"Tu dispositivo no tiene una voz para este idioma. Podés instalarla en los ajustes de texto a voz del sistema.","noTts":"Este dispositivo no puede leer en voz alta.","offline":"Sin conexión","download":"Descargar","downloaded":"Descargada","downloading":"Descargando","dlHint":"Guardá traducciones en el dispositivo para leer sin internet.","removeDl":"Quitar"},"en":{"read":"Read","index":"Contents","saved":"Saved","enc":"Encyclicals","apoc":"Apocrypha","ot":"Old Testament","nt":"New Testament","otS":"OT","ntS":"NT","pent":"Pentateuch","hist":"Historical books","wis":"Wisdom books","poet":"Poetic books","proph":"Prophets","major":"Major prophets","minor":"Minor prophets","vulgapp":"Vulgate appendix","orthapp":"Appendix","gospels":"Gospels","acts":"Acts","paul":"Letters of Paul","catholic":"Catholic letters","apocG":"Prophecy","trad_catholic":"Catholic","trad_protestant":"Protestant","trad_orthodox":"Orthodox","markRead":"Mark chapter as read","isRead":"Chapter read","prev":"Previous","next":"Next","chapter":"Chapter","chapters":"chapters","chap1":"chapter","readN":"read","loading":"Loading…","loadErr":"The text could not be loaded. Check your connection.","retry":"Try again","notIn":"is not in this translation","tryOther":"You can read it in:","save":"Save","highlight":"Highlight","unhl":"Remove","copy":"Copy","copied":"Copied","close":"Close","note":"Note (optional)","saveBm":"Save bookmark","bmSaved":"Bookmark saved","continue":"Continue reading","bookmarks":"Bookmarks","history":"Recently read","noBm":"Nothing saved yet. Tap a verse while reading and choose Save.","open":"Open","del":"Delete","total":"Whole Bible","searchPh":"Go to a reference (John 3:16) or search a word","go":"Go","searching":"Searching","results":"results","noRes":"That word is not in this translation.","moreRes":"Showing the first 200.","settings":"Settings","translation":"Translation","tradition":"Tradition (canon)","tradHint":"Sets which books appear and in what order.","uiLang":"App language","size":"Text size","theme":"Theme","auto":"Automatic","light":"Light","dark":"Dark","flow":"Continuous text (verses not separated)","showHeads":"Show section headings","showNotes":"Show footnotes","autoRead":"Mark as read when I finish a chapter","sync":"Sync","syncOn":"Your progress is saved to your account and syncs across devices.","syncOff":"Your progress is saved on this device.","backup":"Backup","copyBackup":"Copy backup","restore":"Restore","restorePh":"Paste a backup you copied before","restored":"Progress restored","badBackup":"That text is not a valid backup.","reset":"Erase all progress","resetQ":"Are you sure? Read chapters, bookmarks and highlights will be erased.","yesReset":"Yes, erase","cancel":"Cancel","resetDone":"Progress erased","sources":"Texts and licenses","books":"books","chooseVersion":"Choose a translation","markBook":"Mark book as read","unmarkBook":"Unmark book","goVerse":"Go to a verse","encIntro":"Encyclicals are letters from the Pope to the whole Church. Here are the ones the Holy See publishes in Spanish, with a summary. The full text opens on vatican.va.","readOn":"Read on vatican.va","readDone":"Read","markEnc":"Mark read","pending":"To read","all":"All","readF":"Read","filterPh":"Filter by title or topic","encRead":"encyclicals read","apocIntro":"Ancient writings outside the Catholic and Protestant canons. 1 Enoch and Jubilees are canonical in the Ethiopian Orthodox Church. Texts are in English, in classic public-domain translations.","g_ot":"Old Testament pseudepigrapha","g_t12":"Testaments of the Twelve Patriarchs","g_gos":"Apocryphal gospels","g_acts":"Acts, apocalypses and hymns","g_af":"Apostolic Fathers","vulgNum":"Psalms use Greek (Vulgate) numbering.","available":"available in this translation","of":"of","season_ord":"Ordinary Time","season_adv":"Advent","season_xmas":"Christmas","season_lent":"Lent","season_triduum":"Easter Triduum","season_east":"Easter","season_pent":"Pentecost","noteT":"Note","listen":"Listen","listenFrom":"Listen from here","play":"Play","pause":"Pause","stop":"Stop","speed":"Speed","voice":"Voice","voiceAuto":"Automatic","audio":"Audio","readHeads":"Also read section headings","autoNext":"Continue with the next chapter","noVoice":"Your device has no voice for this language. You can install one in the system text-to-speech settings.","noTts":"This device cannot read aloud.","offline":"Offline","download":"Download","downloaded":"Downloaded","downloading":"Downloading","dlHint":"Save translations on this device to read without internet.","removeDl":"Remove"}};
+const STR={"es":{"read":"Leer","index":"Índice","saved":"Guardados","enc":"Encíclicas","apoc":"Apócrifos","ot":"Antiguo Testamento","nt":"Nuevo Testamento","otS":"A. T.","ntS":"N. T.","pent":"Pentateuco","hist":"Libros históricos","wis":"Libros sapienciales","poet":"Libros poéticos","proph":"Libros proféticos","major":"Profetas mayores","minor":"Profetas menores","vulgapp":"Apéndice de la Vulgata","orthapp":"Apéndice","gospels":"Evangelios","acts":"Hechos","paul":"Cartas de san Pablo","catholic":"Cartas católicas","apocG":"Profecía","trad_catholic":"Católica","trad_protestant":"Protestante","trad_orthodox":"Ortodoxa","markRead":"Marcar capítulo como leído","isRead":"Capítulo leído","prev":"Anterior","next":"Siguiente","chapter":"Capítulo","chapters":"capítulos","chap1":"capítulo","readN":"leídos","loading":"Cargando…","loadErr":"No se pudo cargar el texto. Revisá tu conexión.","retry":"Reintentar","notIn":"no está en esta traducción","tryOther":"Lo podés leer en:","save":"Guardar","highlight":"Resaltar","unhl":"Quitar","copy":"Copiar","copied":"Copiado","close":"Cerrar","note":"Nota (opcional)","saveBm":"Guardar marcador","bmSaved":"Marcador guardado","continue":"Seguir leyendo","bookmarks":"Marcadores","history":"Leído hace poco","noBm":"Todavía no guardaste nada. Tocá un versículo mientras leés y elegí Guardar.","open":"Abrir","del":"Borrar","total":"Toda la Biblia","searchPh":"Ir a una cita (Jn 3,16) o buscar palabra","go":"Ir","searching":"Buscando","results":"resultados","noRes":"No encontré esa palabra en esta traducción.","moreRes":"Mostrando los primeros 200.","settings":"Ajustes","translation":"Traducción","tradition":"Tradición (canon)","tradHint":"Define qué libros aparecen y en qué orden.","uiLang":"Idioma de la app","size":"Tamaño de letra","theme":"Tema","auto":"Automático","light":"Claro","dark":"Oscuro","flow":"Texto corrido (sin separar versículos)","showHeads":"Mostrar subtítulos","showNotes":"Mostrar notas al pie","autoRead":"Marcar como leído al terminar el capítulo","sync":"Sincronización","syncOn":"Tu progreso se guarda en tu cuenta y se sincroniza entre dispositivos.","syncOff":"Tu progreso se guarda en este dispositivo.","backup":"Copia de seguridad","copyBackup":"Copiar respaldo","restore":"Restaurar","restorePh":"Pegá acá un respaldo copiado antes","restored":"Progreso restaurado","badBackup":"Ese texto no es un respaldo válido.","reset":"Borrar todo el progreso","resetQ":"¿Seguro? Se borran capítulos leídos, marcadores y resaltados.","yesReset":"Sí, borrar","cancel":"Cancelar","resetDone":"Progreso borrado","sources":"Textos y licencias","books":"libros","chooseVersion":"Elegí una traducción","markBook":"Marcar libro como leído","unmarkBook":"Desmarcar libro","goVerse":"Ir a un versículo","encIntro":"Las encíclicas son cartas del Papa a toda la Iglesia. Acá están las que la Santa Sede publica en español, con un resumen. El texto completo se abre en vatican.va.","readOn":"Leer en vatican.va","readDone":"Leída","markEnc":"Marcar leída","pending":"Pendientes","all":"Todas","readF":"Leídas","filterPh":"Filtrar por título o tema","encRead":"encíclicas leídas","apocIntro":"Escritos antiguos que no forman parte del canon católico ni protestante. 1 Henoc y Jubileos sí son canónicos para la Iglesia ortodoxa etíope. Están en inglés, en traducciones clásicas de dominio público.","g_ot":"Antiguo Testamento (pseudoepígrafos)","g_t12":"Testamentos de los Doce Patriarcas","g_gos":"Evangelios apócrifos","g_acts":"Hechos, apocalipsis e himnos","g_af":"Padres Apostólicos","vulgNum":"Salmos con numeración griega (Vulgata).","available":"disponibles en esta traducción","of":"de","season_ord":"Tiempo Ordinario","season_adv":"Adviento","season_xmas":"Navidad","season_lent":"Cuaresma","season_triduum":"Triduo Pascual","season_east":"Pascua","season_pent":"Pentecostés","noteT":"Nota","listen":"Escuchar","listenFrom":"Escuchar desde aquí","play":"Reproducir","pause":"Pausa","stop":"Detener","speed":"Velocidad","voice":"Voz","voiceAuto":"Automática","audio":"Audio","readHeads":"Leer también los subtítulos","autoNext":"Seguir con el capítulo siguiente","noVoice":"Tu dispositivo no tiene una voz para este idioma. Podés instalarla en los ajustes de texto a voz del sistema.","noTts":"Este dispositivo no puede leer en voz alta.","offline":"Sin conexión","download":"Descargar","downloaded":"Descargada","downloading":"Descargando","dlHint":"Guardá traducciones en el dispositivo para leer sin internet.","removeDl":"Quitar","natural":"Voces naturales","naturalHint":"Suenan como una persona y funcionan sin internet. Se descargan una sola vez.","sysVoice":"Voz del sistema","getVoices":"Instalar más voces del sistema","getVoicesHint":"En Ajustes de Android → Texto a voz, elegí \"Servicios de voz de Google\" y descargá una voz en alta calidad.","dlFail":"No se pudo descargar. Revisá tu conexión."},"en":{"read":"Read","index":"Contents","saved":"Saved","enc":"Encyclicals","apoc":"Apocrypha","ot":"Old Testament","nt":"New Testament","otS":"OT","ntS":"NT","pent":"Pentateuch","hist":"Historical books","wis":"Wisdom books","poet":"Poetic books","proph":"Prophets","major":"Major prophets","minor":"Minor prophets","vulgapp":"Vulgate appendix","orthapp":"Appendix","gospels":"Gospels","acts":"Acts","paul":"Letters of Paul","catholic":"Catholic letters","apocG":"Prophecy","trad_catholic":"Catholic","trad_protestant":"Protestant","trad_orthodox":"Orthodox","markRead":"Mark chapter as read","isRead":"Chapter read","prev":"Previous","next":"Next","chapter":"Chapter","chapters":"chapters","chap1":"chapter","readN":"read","loading":"Loading…","loadErr":"The text could not be loaded. Check your connection.","retry":"Try again","notIn":"is not in this translation","tryOther":"You can read it in:","save":"Save","highlight":"Highlight","unhl":"Remove","copy":"Copy","copied":"Copied","close":"Close","note":"Note (optional)","saveBm":"Save bookmark","bmSaved":"Bookmark saved","continue":"Continue reading","bookmarks":"Bookmarks","history":"Recently read","noBm":"Nothing saved yet. Tap a verse while reading and choose Save.","open":"Open","del":"Delete","total":"Whole Bible","searchPh":"Go to a reference (John 3:16) or search a word","go":"Go","searching":"Searching","results":"results","noRes":"That word is not in this translation.","moreRes":"Showing the first 200.","settings":"Settings","translation":"Translation","tradition":"Tradition (canon)","tradHint":"Sets which books appear and in what order.","uiLang":"App language","size":"Text size","theme":"Theme","auto":"Automatic","light":"Light","dark":"Dark","flow":"Continuous text (verses not separated)","showHeads":"Show section headings","showNotes":"Show footnotes","autoRead":"Mark as read when I finish a chapter","sync":"Sync","syncOn":"Your progress is saved to your account and syncs across devices.","syncOff":"Your progress is saved on this device.","backup":"Backup","copyBackup":"Copy backup","restore":"Restore","restorePh":"Paste a backup you copied before","restored":"Progress restored","badBackup":"That text is not a valid backup.","reset":"Erase all progress","resetQ":"Are you sure? Read chapters, bookmarks and highlights will be erased.","yesReset":"Yes, erase","cancel":"Cancel","resetDone":"Progress erased","sources":"Texts and licenses","books":"books","chooseVersion":"Choose a translation","markBook":"Mark book as read","unmarkBook":"Unmark book","goVerse":"Go to a verse","encIntro":"Encyclicals are letters from the Pope to the whole Church. Here are the ones the Holy See publishes in Spanish, with a summary. The full text opens on vatican.va.","readOn":"Read on vatican.va","readDone":"Read","markEnc":"Mark read","pending":"To read","all":"All","readF":"Read","filterPh":"Filter by title or topic","encRead":"encyclicals read","apocIntro":"Ancient writings outside the Catholic and Protestant canons. 1 Enoch and Jubilees are canonical in the Ethiopian Orthodox Church. Texts are in English, in classic public-domain translations.","g_ot":"Old Testament pseudepigrapha","g_t12":"Testaments of the Twelve Patriarchs","g_gos":"Apocryphal gospels","g_acts":"Acts, apocalypses and hymns","g_af":"Apostolic Fathers","vulgNum":"Psalms use Greek (Vulgate) numbering.","available":"available in this translation","of":"of","season_ord":"Ordinary Time","season_adv":"Advent","season_xmas":"Christmas","season_lent":"Lent","season_triduum":"Easter Triduum","season_east":"Easter","season_pent":"Pentecost","noteT":"Note","listen":"Listen","listenFrom":"Listen from here","play":"Play","pause":"Pause","stop":"Stop","speed":"Speed","voice":"Voice","voiceAuto":"Automatic","audio":"Audio","readHeads":"Also read section headings","autoNext":"Continue with the next chapter","noVoice":"Your device has no voice for this language. You can install one in the system text-to-speech settings.","noTts":"This device cannot read aloud.","offline":"Offline","download":"Download","downloaded":"Downloaded","downloading":"Downloading","dlHint":"Save translations on this device to read without internet.","removeDl":"Remove","natural":"Natural voices","naturalHint":"They sound like a person and work offline. Downloaded once.","sysVoice":"System voice","getVoices":"Install more system voices","getVoicesHint":"In Android Settings → Text-to-speech, choose \"Speech Services by Google\" and download a high-quality voice.","dlFail":"Download failed. Check your connection."}};
 /* ---------- Icons ---------- */
 const I={
 audio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4.5" height="6.5" rx="1.6"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="1.6"/></svg>',
@@ -667,24 +686,35 @@ function selText(){return [...sel].sort((a,b)=>a-b).map(n=>plain(CUR.verses[n-1]
 /* ---------- Audio (text to speech) ---------- */
 const TTSLANG={es:'es',en:'en',la:'it',pt:'pt',fr:'fr',it:'it',de:'de',ru:'ru',uk:'uk',cu:'ru',el:'el',zh:'zh',ja:'ja',ko:'ko',ar:'ar',vi:'vi'};
 const PREF_REGION={es:['es-419','es-US','es-MX','es-AR','es-ES'],en:['en-US','en-GB'],pt:['pt-BR','pt-PT'],zh:['zh-CN','zh-TW'],fr:['fr-FR'],it:['it-IT'],de:['de-DE']};
+const SAMPLE={es:'En el principio era el Verbo, y el Verbo estaba con Dios, y el Verbo era Dios.',en:'In the beginning was the Word, and the Word was with God, and the Word was God.',
+  pt:'No princípio era o Verbo, e o Verbo estava com Deus, e o Verbo era Deus.',fr:'Au commencement était la Parole, et la Parole était avec Dieu.',it:'In principio era il Verbo, e il Verbo era presso Dio.',
+  de:'Im Anfang war das Wort, und das Wort war bei Gott.',ru:'В начале было Слово, и Слово было у Бога.',uk:'На початку було Слово, а Слово було в Бога.',el:'Εν αρχή ην ο λόγος, και ο λόγος ην προς τον Θεόν.',
+  zh:'太初有道，道与神同在，道就是神。',vi:'Ban đầu có Ngôi Lời, Ngôi Lời ở cùng Đức Chúa Trời.',ar:'في البدء كان الكلمة، والكلمة كان عند الله.'};
+/* per-device voice choices (models live on this device) */
+const VK='biblia.voice'; let VC={nat:{},dl:{},sys:{}}; try{VC=Object.assign(VC,JSON.parse(localStorage.getItem(VK)||'{}'));}catch(e){}
+const saveVC=()=>{try{localStorage.setItem(VK,JSON.stringify(VC));}catch(e){}};
+const hasPiper=()=>!!window.Piper;
+const natVoice=base=>{ const id=VC.nat[base]; return id&&VC.dl[id]&&hasPiper()&&window.Piper.byId[id]?id:null; };
+let NATIVE_VOICES=null;
+async function nativeVoices(){ const c=TTS.cap(); if(!c) return []; if(NATIVE_VOICES) return NATIVE_VOICES; try{ NATIVE_VOICES=(await c.getSupportedVoices()).voices||[]; }catch(e){ NATIVE_VOICES=[]; } return NATIVE_VOICES; }
 const TTS={
   cap(){return window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.TextToSpeech;},
-  ok(){return !!(this.cap()||('speechSynthesis' in window));},
+  ok(){return !!(this.cap()||('speechSynthesis' in window)||hasPiper());},
   voices(base){ if(this.cap()||!('speechSynthesis' in window)) return []; return speechSynthesis.getVoices().filter(v=>v.lang.replace('_','-').toLowerCase().startsWith(base)); },
   pick(base){ const want=S.tts.voice[base]; const vs=this.voices(base); if(!vs.length) return null;
     if(want){const w=vs.find(v=>v.voiceURI===want); if(w) return w;}
     for(const r of (PREF_REGION[base]||[])){const f=vs.find(v=>v.lang.replace('_','-').toLowerCase()===r.toLowerCase()); if(f) return f;}
     return vs.find(v=>v.localService)||vs[0]; },
-  speak(text,base,rate){ return new Promise((res,rej)=>{
+  speakSystem(text,base,rate){ return new Promise((res,rej)=>{
     const c=this.cap();
-    if(c){ c.speak({text,lang:(PREF_REGION[base]||[base])[0],rate,category:'playback'}).then(res,rej); return; }
-    const u=new SpeechSynthesisUtterance(text); const v=this.pick(base); if(v){u.voice=v;u.lang=v.lang;} else u.lang=base; u.rate=rate;
+    if(c){ const o={text,lang:(PREF_REGION[base]||[base])[0],rate:rate*0.95,pitch:0.97,category:'playback'}; if(VC.sys[base]!=null) o.voice=VC.sys[base]; c.speak(o).then(res,rej); return; }
+    const u=new SpeechSynthesisUtterance(text); const v=this.pick(base); if(v){u.voice=v;u.lang=v.lang;} else u.lang=base; u.rate=rate*0.95; u.pitch=0.97;
     u.onend=()=>res(); u.onerror=e=>(e.error==='interrupted'||e.error==='canceled')?res():rej(e);
     speechSynthesis.speak(u); }); },
-  stop(){ const c=this.cap(); if(c){c.stop().catch(()=>{});} else if('speechSynthesis' in window) speechSynthesis.cancel(); }
+  stop(){ const c=this.cap(); if(c){c.stop().catch(()=>{});} else if('speechSynthesis' in window) speechSynthesis.cancel(); if(hasPiper()) window.Piper.stop(); }
 };
 if('speechSynthesis' in window){ try{speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=()=>{};}catch(e){} }
-const P={on:false,playing:false,items:[],idx:0,tok:0,auto:false,lock:null};
+const P={on:false,playing:false,items:[],idx:0,tok:0,auto:false,lock:null,pre:new Map(),nat:null,base:'es'};
 function buildItems(from){
   const items=[];
   CUR.verses.forEach((txt,i)=>{ const n=i+1; if(n<from) return;
@@ -694,16 +724,23 @@ function buildItems(from){
 }
 async function playerStart(from){
   if(!CUR) return;
-  if(!TTS.ok()){toast(t('noTts'));return;}
-  const base=TTSLANG[CUR.lang]||CUR.lang;
-  if(!TTS.cap()&&'speechSynthesis' in window){ if(!speechSynthesis.getVoices().length) await new Promise(r=>setTimeout(r,400)); if(!TTS.voices(base).length) toast(t('noVoice')); }
-  TTS.stop(); P.on=true; P.items=buildItems(from||1); P.idx=0; P.base=base; drawPlayer(); playerRun();
+  const base=TTSLANG[CUR.lang]||CUR.lang; const nat=natVoice(base);
+  if(nat) window.Piper.audio();               /* unlock audio inside the tap */
+  else if(!TTS.cap()&&!('speechSynthesis' in window)){toast(t('noTts'));return;}
+  if(!nat&&!TTS.cap()&&'speechSynthesis' in window){ if(!speechSynthesis.getVoices().length) await new Promise(r=>setTimeout(r,400)); if(!TTS.voices(base).length) toast(t('noVoice')); }
+  TTS.stop(); P.on=true; P.items=buildItems(from||1); P.idx=0; P.base=base; P.nat=nat; P.pre=new Map(); drawPlayer(); playerRun();
 }
+function synthAt(i){ if(!P.nat||i>=P.items.length) return null; const key=i+'|'+S.tts.rate; if(!P.pre.has(key)) P.pre.set(key,window.Piper.synth(P.nat,P.items[i].text,S.tts.rate)); return P.pre.get(key); }
 async function playerRun(){
   const tok=++P.tok; P.playing=true; drawPlayer(); wake(true);
+  if(P.nat){ const lab=$('.player .plab'); if(lab) lab.textContent=t('loading');
+    try{ await window.Piper.load(P.nat); }catch(e){ if(tok===P.tok){ P.nat=null; toast(t('loadErr')); } } }
   while(P.idx<P.items.length&&tok===P.tok){
     const it=P.items[P.idx]; markSpeaking(it.v);
-    try{ await TTS.speak(it.text,P.base,S.tts.rate); }catch(e){ if(tok===P.tok){ P.playing=false; drawPlayer(); wake(false); } return; }
+    try{
+      if(P.nat){ const a=await synthAt(P.idx); synthAt(P.idx+1); if(tok!==P.tok) return; await window.Piper.play(a); }
+      else await TTS.speakSystem(it.text,P.base,S.tts.rate);
+    }catch(e){ if(tok===P.tok){ P.playing=false; drawPlayer(); wake(false); } return; }
     if(tok!==P.tok) return; P.idx++;
   }
   if(tok!==P.tok) return;
@@ -712,7 +749,7 @@ async function playerRun(){
   playerStop();
 }
 function playerPause(){ P.tok++; TTS.stop(); P.playing=false; drawPlayer(); wake(false); }
-function playerStop(){ P.tok++; TTS.stop(); P.on=false; P.playing=false; P.auto=false; markSpeaking(null); const pb=$('.player'); if(pb) pb.remove(); document.body.classList.remove('has-player'); wake(false); }
+function playerStop(){ P.tok++; TTS.stop(); P.on=false; P.playing=false; P.auto=false; P.pre=new Map(); markSpeaking(null); const pb=$('.player'); if(pb) pb.remove(); document.body.classList.remove('has-player'); wake(false); }
 function markSpeaking(v){ document.querySelectorAll('.v.speaking').forEach(x=>x.classList.remove('speaking'));
   if(v==null) return; const el=document.querySelector(`.v[data-v="${v}"]`); if(el){ el.classList.add('speaking'); const m=$('#view'),r=el.getBoundingClientRect(),mr=m.getBoundingClientRect();
     if(r.top<mr.top+40||r.bottom>mr.bottom-120) el.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); }
@@ -725,15 +762,54 @@ function drawPlayer(){
     <div class="plab" aria-live="polite"></div>
     <button class="chip" id="pRate" aria-label="${t('speed')}">${S.tts.rate}×</button>
     <button class="pbtn" id="pStop" aria-label="${t('stop')}">${I.x}</button>`;
-  $('#pPlay').onclick=()=>P.playing?playerPause():playerRun();
+  $('#pPlay').onclick=()=>{ if(P.playing) playerPause(); else { if(P.nat) window.Piper.audio(); playerRun(); } };
   $('#pStop').onclick=playerStop;
-  $('#pRate').onclick=()=>{const i=RATES.indexOf(S.tts.rate);S.tts.rate=RATES[(i+1)%RATES.length];save();if(P.playing){P.tok++;TTS.stop();setTimeout(playerRun,60);}else drawPlayer();};
+  $('#pRate').onclick=()=>{const i=RATES.indexOf(S.tts.rate);S.tts.rate=RATES[(i+1)%RATES.length];save();P.pre=new Map();if(P.playing){P.tok++;TTS.stop();setTimeout(playerRun,60);}else drawPlayer();};
   markSpeaking(P.items[P.idx]?P.items[P.idx].v:null);
 }
+/* Voice settings sheet */
+async function openVoiceSheet(inPlace){
+  const v=V(); const base=TTSLANG[v.lang]||v.lang; const list=hasPiper()?(window.Piper.VOICES[base]||[]):[];
+  const sel=VC.nat[base]||'';
+  const row=x=>{ const dl=VC.dl[x.id], pr=VPROG[x.id];
+    return `<div class="voice ${sel===x.id&&dl?'on':''}"><div class="main"><b>${esc(x.name)}</b><div class="meta">${esc(x.info)} · ${x.mb} MB</div></div>
+      ${pr!=null?`<span class="pill" id="vp-${x.id}">${pr}%</span>`:dl?`<button class="btn ghost small" data-try="${x.id}">${t('listen')}</button><button class="btn small ${sel===x.id?'':'ghost'}" data-use="${x.id}" aria-pressed="${sel===x.id}">${sel===x.id?'✓':t('voice')}</button><button class="icon-btn" data-rm="${x.id}" aria-label="${t('removeDl')}">${I.x}</button>`
+        :`<button class="btn small" data-dl="${x.id}">${I.download.replace('<svg','<svg width="15" height="15" style="vertical-align:-3px"')} ${t('download')}</button>`}</div>`; };
+  const nv=TTS.cap()?(await nativeVoices()).map((x,i)=>({x,i})).filter(o=>(o.x.lang||'').toLowerCase().replace('_','-').startsWith(base)):[];
+  const wv=TTS.voices(base);
+  const body=`
+    ${list.length?`<div class="group" style="margin-top:0">${t('natural')}</div><p class="hint" style="margin:0 0 10px">${t('naturalHint')}</p>
+      <div class="voices">${list.map(row).join('')}</div>
+      <label class="sw" for="useSys"><span>${t('sysVoice')}</span><input type="radio" name="eng" id="useSys" ${!natVoice(base)?'checked':''}></label>`:''}
+    <div class="group">${t('sysVoice')}</div>
+    ${TTS.cap()?(nv.length?`<select id="nvSel"><option value="">${t('voiceAuto')}</option>${nv.map(o=>`<option value="${o.i}" ${VC.sys[base]==o.i?'selected':''}>${esc(o.x.name)} (${o.x.lang})</option>`).join('')}</select>`:'')
+      +`<button class="btn ghost small" id="instV" style="margin-top:10px">${t('getVoices')}</button><p class="hint">${t('getVoicesHint')}</p>`
+      :(wv.length?`<select id="vSel"><option value="">${t('voiceAuto')}</option>${wv.map(x=>`<option value="${esc(x.voiceURI)}" ${S.tts.voice[base]===x.voiceURI?'selected':''}>${esc(x.name)} (${x.lang})</option>`).join('')}</select>`:`<p class="hint">${t('noVoice')}</p>`)}
+    <div style="margin-top:12px"><button class="btn ghost small" id="trySys">${t('listen')} · ${t('sysVoice')}</button></div>
+    ${hasPiper()?`<p class="credits" style="margin-top:18px">Piper TTS (rhasspy) · onnxruntime-web · espeak-ng</p>`:''}`;
+  const sh=openSheet(`${t('voice')} · ${LANGS[v.lang]}`,body,null,inPlace); sh.dataset.voice='1';
+  const redraw=()=>{ if(document.querySelector('#layer .sheet[data-voice]')) openVoiceSheet(true); };
+  sh.querySelectorAll('[data-dl]').forEach(b=>b.onclick=async()=>{ const id=b.dataset.dl; VPROG[id]=0; redraw();
+    let last=0; try{ await window.Piper.download(id,p=>{ const n=Math.round(p*100); if(n!==last){ last=n; VPROG[id]=n; const el=document.getElementById('vp-'+id); if(el) el.textContent=n+'%'; } });
+      VC.dl[id]=Date.now(); VC.nat[base]=id; saveVC(); toast(`${window.Piper.byId[id].name}: ${t('downloaded')}`); }
+    catch(e){ toast(t('dlFail')); } delete VPROG[id]; redraw(); });
+  sh.querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>{ VC.nat[base]=b.dataset.use; saveVC(); redraw(); });
+  sh.querySelectorAll('[data-rm]').forEach(b=>b.onclick=async()=>{ const id=b.dataset.rm; await window.Piper.remove(id); delete VC.dl[id]; if(VC.nat[base]===id) delete VC.nat[base]; saveVC(); redraw(); });
+  sh.querySelectorAll('[data-try]').forEach(b=>b.onclick=async()=>{ window.Piper.audio(); const id=b.dataset.try; b.disabled=true; b.textContent=t('loading');
+    try{ const a=await window.Piper.synth(id,SAMPLE[base]||SAMPLE.en,S.tts.rate); b.textContent=t('listen'); b.disabled=false; await window.Piper.play(a); }catch(e){ b.textContent=t('listen'); b.disabled=false; toast(t('loadErr')); } });
+  const us=sh.querySelector('#useSys'); if(us) us.onchange=()=>{ delete VC.nat[base]; saveVC(); redraw(); };
+  const ns=sh.querySelector('#nvSel'); if(ns) ns.onchange=e=>{ if(e.target.value==='') delete VC.sys[base]; else VC.sys[base]=+e.target.value; saveVC(); };
+  const vs=sh.querySelector('#vSel'); if(vs) vs.onchange=e=>{ if(e.target.value) S.tts.voice[base]=e.target.value; else delete S.tts.voice[base]; save(); };
+  const iv=sh.querySelector('#instV'); if(iv) iv.onclick=()=>{ try{ TTS.cap().openInstall(); }catch(e){} };
+  sh.querySelector('#trySys').onclick=()=>{ TTS.stop(); TTS.speakSystem(SAMPLE[base]||SAMPLE.en,base,S.tts.rate).catch(()=>toast(t('noTts'))); };
+}
+const VPROG={};
 async function wake(on){ try{ if(on&&!P.lock&&navigator.wakeLock) P.lock=await navigator.wakeLock.request('screen'); else if(!on&&P.lock){P.lock.release();P.lock=null;} }catch(e){} }
 
 /* ---------- Sheets ---------- */
-function openSheet(title,body,onMount){
+function openSheet(title,body,onMount,inPlace){
+  const ex=inPlace&&document.querySelector('#layer .sheet.open');
+  if(ex){ ex.setAttribute('aria-label',title); ex.querySelector('.sh h3').textContent=title; ex.querySelector('.sb').innerHTML=body; if(onMount) onMount(ex); return ex; }
   closeSheet(true);
   const L=$('#layer');
   L.innerHTML=`<div class="backdrop"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="grab"></div>
@@ -755,23 +831,44 @@ function closeSheet(instant){
   if(bd)bd.classList.remove('open'); if(sh)sh.classList.remove('open');
   setTimeout(()=>{ if(L.querySelector('.sheet:not(.open)')) L.innerHTML=''; },250);
 }
-function openChapterSheet(book){
-  const n=chCount(book), cur=S.reading!=='apoc'&&S.pos.book===book?S.pos.ch:0;
-  const [r]=bookRead(book);
-  const has=!!V().chapters[book];
-  const body=`<p class="sub">${n} ${n===1?t('chap1'):t('chapters')} · ${r}/${n} ${t('readN')}${has?'':' · '+t('notIn')}</p>
-    <div class="grid">${Array.from({length:n},(_,i)=>`<button data-c="${i+1}" class="${S.read[rkey(book,i+1)]?'read':''} ${cur===i+1?'cur':''}" aria-label="${t('chapter')} ${i+1}">${i+1}</button>`).join('')}</div>
-    <div id="vpick"></div>
-    <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap"><button class="btn ghost small" id="markAll">${r===n?t('unmarkBook'):t('markBook')}</button></div>`;
-  openSheet(bname(book),body,sh=>{
-    sh.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>openBible(book,+b.dataset.c));
-    sh.querySelector('#markAll').onclick=()=>{ const all=r===n; for(let i=1;i<=n;i++){const k=rkey(book,i); if(all) delete S.read[k]; else S.read[k]=S.read[k]||Date.now();} save(); closeSheet(); render(); };
-    if(cur&&has){
-      getBook(V().id,book).then(bd=>{ const vs=bd.c[cur-1]||[]; const box=sh.querySelector('#vpick'); if(!box) return;
-        box.innerHTML=`<div class="group" style="margin-top:20px">${t('goVerse')} · ${esc(bname(book))} ${cur}</div><div class="vgrid">${vs.map((x,i)=>x?`<button data-vv="${i+1}">${i+1}</button>`:'').join('')}</div>`;
-        box.querySelectorAll('[data-vv]').forEach(b=>b.onclick=()=>openBible(book,cur,+b.dataset.vv)); }).catch(()=>{});
-    }
-  });
+/* Navigator: testament → book → chapter → verse, all inside one sheet */
+function bookTestament(c){ return NT.some(g=>g.b.includes(c))?'nt':'ot'; }
+function openChapterSheet(book){ openNav('chapters',book); }
+function openNav(step,book,ch){
+  const sh=openSheet('',''); const N={tab:bookTestament(book||S.pos.book),book:book||S.pos.book,ch:ch||0};
+  const head=(title,back)=>{ const h=sh.querySelector('.sh h3'); h.innerHTML=back?`<button class="navback" id="navBack" aria-label="${esc(back)}">${I.down.replace('<svg','<svg style="transform:rotate(90deg)"')}<span>${esc(back)}</span></button><span class="navtitle">${esc(title)}</span>`:esc(title); };
+  const body=html=>{ const b=sh.querySelector('.sb'); b.innerHTML=html; b.scrollTop=0; return b; };
+  function books(){
+    head(t('index'));
+    const groups=canonGroups(S.tradition,N.tab);
+    const b=body(`<div class="seg" role="group"><button data-tab="ot" aria-pressed="${N.tab==='ot'}">${t('ot')}</button><button data-tab="nt" aria-pressed="${N.tab==='nt'}">${t('nt')}</button></div>`+
+      groups.map(gr=>`<div class="group">${t(gr.g==='apoc'?'apocG':gr.g)}</div><div class="bgrid">${gr.books.map(x=>{const [r,n]=bookRead(x.c);
+        return `<button data-b="${x.c}" class="${x.has?'':'off'} ${x.c===S.pos.book&&S.reading!=='apoc'?'cur':''} ${n&&r===n?'done':''}">${esc(bname(x.c))}</button>`;}).join('')}</div>`).join(''));
+    b.querySelectorAll('[data-tab]').forEach(x=>x.onclick=()=>{N.tab=x.dataset.tab;books();});
+    b.querySelectorAll('[data-b]').forEach(x=>x.onclick=()=>{N.book=x.dataset.b;chapters();});
+  }
+  function chapters(){
+    const book=N.book, n=chCount(book), cur=S.reading!=='apoc'&&S.pos.book===book?S.pos.ch:0, [r]=bookRead(book), has=!!V().chapters[book];
+    head(bname(book),t('index'));
+    const b=body(`<p class="sub">${n} ${n===1?t('chap1'):t('chapters')} · ${r}/${n} ${t('readN')}${has?'':' · '+t('notIn')}</p>
+      <div class="grid">${Array.from({length:n},(_,i)=>`<button data-c="${i+1}" class="${S.read[rkey(book,i+1)]?'read':''} ${cur===i+1?'cur':''}" aria-label="${t('chapter')} ${i+1}">${i+1}</button>`).join('')}</div>
+      <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap"><button class="btn ghost small" id="markAll">${r===n?t('unmarkBook'):t('markBook')}</button></div>`);
+    sh.querySelector('#navBack').onclick=books;
+    b.querySelectorAll('[data-c]').forEach(x=>x.onclick=()=>{N.ch=+x.dataset.c; if(has) verses(); else openBible(book,N.ch);});
+    b.querySelector('#markAll').onclick=()=>{ const all=r===n; for(let i=1;i<=n;i++){const k=rkey(book,i); if(all) delete S.read[k]; else S.read[k]=S.read[k]||Date.now();} save(); render(); chapters(); };
+  }
+  function verses(){
+    const book=N.book, c=N.ch;
+    head(`${bname(book)} ${c}`,bname(book));
+    const b=body(`<button class="btn" id="readCh" style="width:100%;margin-bottom:16px">${t('read')} · ${esc(bname(book))} ${c}</button>
+      <div class="group" style="margin-top:4px">${t('goVerse')}</div><div class="vgrid" id="vg"><div class="loading">${t('loading')}</div></div>`);
+    sh.querySelector('#navBack').onclick=chapters;
+    b.querySelector('#readCh').onclick=()=>openBible(book,c);
+    getBook(V().id,book).then(bd=>{ const vs=bd.c[c-1]||[]; const g=b.querySelector('#vg'); if(!g) return;
+      g.innerHTML=vs.map((x,i)=>x?`<button data-vv="${i+1}">${i+1}</button>`:'').join('');
+      g.querySelectorAll('[data-vv]').forEach(x=>x.onclick=()=>openBible(book,c,+x.dataset.vv)); }).catch(()=>{});
+  }
+  ({books,chapters,verses})[step]();
 }
 function openApocChapters(id){
   const a=APOCMAP[id]; if(!a) return;
@@ -815,7 +912,6 @@ function openBookmarkSheet(){
 
 /* ---------- Settings ---------- */
 function openSettings(){
-  const base=TTSLANG[V().lang]||V().lang; const vs=TTS.voices(base);
   const body=`
   <div class="field"><label for="uiSel">${t('uiLang')}</label><select id="uiSel">${Object.entries(UILANGS).map(([k,n])=>`<option value="${k}" ${S.ui===k?'selected':''}>${n}</option>`).join('')}</select></div>
   <div class="field"><span class="lab">${t('tradition')}</span><div class="seg" role="group">${['catholic','protestant','orthodox'].map(x=>`<button data-tr="${x}" aria-pressed="${S.tradition===x}">${t('trad_'+x)}</button>`).join('')}</div>
@@ -829,9 +925,9 @@ function openSettings(){
     <label class="sw" for="swF"><span>${t('flow')}</span><input type="checkbox" id="swF" ${S.flow?'checked':''}></label>
     <label class="sw" for="swA"><span>${t('autoRead')}</span><input type="checkbox" id="swA" ${S.autoRead?'checked':''}></label></div>
   <div class="field"><span class="lab">${t('audio')}</span>
-    ${TTS.ok()?`${vs.length?`<label for="vSel" class="hint" style="display:block;margin:0 0 6px">${t('voice')} · ${LANGS[V().lang]}</label><select id="vSel"><option value="">${t('voiceAuto')}</option>${vs.map(v=>`<option value="${esc(v.voiceURI)}" ${S.tts.voice[base]===v.voiceURI?'selected':''}>${esc(v.name)} (${v.lang})</option>`).join('')}</select>`:(TTS.cap()?'':`<div class="hint" style="margin:0 0 6px">${t('noVoice')}</div>`)}
+    <button class="vrow" id="setVoice" style="border:1px solid var(--line);border-radius:12px;padding:10px 12px"><div class="main"><b>${esc((()=>{const bb=TTSLANG[V().lang]||V().lang;const n=natVoice(bb);return n?window.Piper.byId[n].name:t('sysVoice');})())}</b><div class="meta">${t('voice')} · ${LANGS[V().lang]}</div></div>${I.down}</button>
     <label class="sw" for="swTH"><span>${t('readHeads')}</span><input type="checkbox" id="swTH" ${S.tts.heads?'checked':''}></label>
-    <label class="sw" for="swTN"><span>${t('autoNext')}</span><input type="checkbox" id="swTN" ${S.tts.next?'checked':''}></label>`:`<div class="hint" style="margin:0">${t('noTts')}</div>`}</div>
+    <label class="sw" for="swTN"><span>${t('autoNext')}</span><input type="checkbox" id="swTN" ${S.tts.next?'checked':''}></label></div>
   <div class="field"><span class="lab">${t('offline')}</span><div class="hint" style="margin:0 0 8px">${t('dlHint')}</div><button class="btn ghost small" id="setDl">${I.download.replace('<svg','<svg width="16" height="16" style="vertical-align:-3px"')} ${t('download')}</button></div>
   <div class="field"><span class="lab">${t('sync')}</span><div class="hint" style="margin-top:0">${remote.status==='on'?t('syncOn'):t('syncOff')}</div></div>
   <div class="field"><span class="lab">${t('backup')}</span><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost small" id="bkCopy">${t('copyBackup')}</button><button class="btn ghost small" id="bkRest">${t('restore')}</button></div>
@@ -850,7 +946,7 @@ function openSettings(){
     const sw=(id,fn)=>{const el=sh.querySelector(id); if(el) el.onchange=e=>{fn(e.target.checked);save();if(route==='leer'&&!P.on)render();};};
     sw('#swH',v=>S.heads=v); sw('#swN',v=>S.notes=v); sw('#swF',v=>S.flow=v); sw('#swA',v=>S.autoRead=v);
     sw('#swTH',v=>S.tts.heads=v); sw('#swTN',v=>S.tts.next=v);
-    const vsel=sh.querySelector('#vSel'); if(vsel) vsel.onchange=e=>{ if(e.target.value) S.tts.voice[base]=e.target.value; else delete S.tts.voice[base]; save(); };
+    sh.querySelector('#setVoice').onclick=()=>openVoiceSheet();
     sh.querySelector('#bkCopy').onclick=()=>copyText(JSON.stringify(S));
     sh.querySelector('#bkRest').onclick=()=>{ const box=sh.querySelector('#bkBox'); box.innerHTML=`<div class="field" style="margin-top:10px"><textarea id="bkTa" rows="4" placeholder="${t('restorePh')}"></textarea></div><button class="btn small" id="bkGo">${t('restore')}</button>`;
       box.querySelector('#bkGo').onclick=async()=>{ try{const o=JSON.parse(box.querySelector('#bkTa').value); if(!o||o.v!==1||typeof o.read!=='object') throw 0; S=Object.assign(DEFAULT_STATE(),o); save(); await loadLocale(); applyPrefs(); closeSheet(); render(); toast(t('restored')); }catch(e){toast(t('badBackup'));} }; };
