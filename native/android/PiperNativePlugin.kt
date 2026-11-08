@@ -173,12 +173,15 @@ class PiperNativePlugin : Plugin() {
                 cache.remove(key)
                 if (myGen != generation) { call.resolve(); return@execute }
                 val samples = audio.samples; val sr = audio.sampleRate
+                if (sr <= 0 || samples.isEmpty()) { call.resolve(); return@execute }
                 val minBuf = AudioTrack.getMinBufferSize(sr, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_FLOAT)
+                // Float mono = 4 bytes per frame: the buffer must be a positive multiple of 4 (≈0.5 s here).
+                val bufBytes = ((maxOf(minBuf, sr * 2) + 3) / 4) * 4
                 val t = AudioTrack.Builder()
                     .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build())
                     .setAudioFormat(AudioFormat.Builder().setEncoding(AudioFormat.ENCODING_PCM_FLOAT).setSampleRate(sr).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build())
                     .setTransferMode(AudioTrack.MODE_STREAM)
-                    .setBufferSizeInBytes(maxOf(minBuf, sr * 4 / 4))
+                    .setBufferSizeInBytes(bufBytes)
                     .build()
                 track = t
                 t.play()
