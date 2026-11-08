@@ -694,7 +694,21 @@ const SAMPLE={es:'En el principio era el Verbo, y el Verbo estaba con Dios, y el
 const VK='biblia.voice'; let VC={nat:{},dl:{},sys:{}}; try{VC=Object.assign(VC,JSON.parse(localStorage.getItem(VK)||'{}'));}catch(e){}
 const saveVC=()=>{try{localStorage.setItem(VK,JSON.stringify(VC));}catch(e){}};
 const hasPiper=()=>!!window.Piper;
-const natVoice=base=>{ const id=VC.nat[base]; return id&&VC.dl[id]&&hasPiper()&&window.Piper.byId[id]?id:null; };
+const NP=()=>window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.PiperNative;
+const NATIVE_URL=id=>`https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-${id}.tar.bz2`;
+const dlMap=()=>NP()?(VC.ndl||(VC.ndl={})):VC.dl;
+/* Native engine available: free the space used by the slower in-page voices */
+if(NP()&&Object.keys(VC.dl||{}).length){ try{ caches.delete('piper-voices-v1'); }catch(e){} VC.dl={}; VC.nat={}; try{localStorage.setItem('biblia.voice',JSON.stringify(VC));}catch(e){} }
+const NAT={
+  async load(id){ if(NP()) return NP().load({id}); return window.Piper.load(id); },
+  async download(id,onProg){ if(NP()){ const h=await NP().addListener('progress',e=>{ if(e.id===id) onProg&&onProg(e.p/100); }); try{ await NP().download({id,url:NATIVE_URL(id)}); } finally{ h.remove(); } return; } return window.Piper.download(id,onProg); },
+  async remove(id){ if(NP()) return NP().remove({id}); return window.Piper.remove(id); },
+  prepare(id,text,rate,key){ if(NP()) return NP().prepare({key,text,speed:rate*0.96}).then(()=>key); return window.Piper.synth(id,text,rate); },
+  play(x){ if(NP()) return NP().play({key:x}); return window.Piper.play(x); },
+  stop(){ if(NP()) NP().stop().catch(()=>{}); else if(hasPiper()) window.Piper.stop(); },
+  unlock(){ if(!NP()&&hasPiper()) window.Piper.audio(); }
+};
+const natVoice=base=>{ const id=VC.nat[base]; return id&&dlMap()[id]&&hasPiper()&&window.Piper.byId[id]?id:null; };
 let NATIVE_VOICES=null;
 async function nativeVoices(){ const c=TTS.cap(); if(!c) return []; if(NATIVE_VOICES) return NATIVE_VOICES; try{ NATIVE_VOICES=(await c.getSupportedVoices()).voices||[]; }catch(e){ NATIVE_VOICES=[]; } return NATIVE_VOICES; }
 const TTS={
@@ -711,7 +725,7 @@ const TTS={
     const u=new SpeechSynthesisUtterance(text); const v=this.pick(base); if(v){u.voice=v;u.lang=v.lang;} else u.lang=base; u.rate=rate*0.95; u.pitch=0.97;
     u.onend=()=>res(); u.onerror=e=>(e.error==='interrupted'||e.error==='canceled')?res():rej(e);
     speechSynthesis.speak(u); }); },
-  stop(){ const c=this.cap(); if(c){c.stop().catch(()=>{});} else if('speechSynthesis' in window) speechSynthesis.cancel(); if(hasPiper()) window.Piper.stop(); }
+  stop(){ const c=this.cap(); if(c){c.stop().catch(()=>{});} else if('speechSynthesis' in window) speechSynthesis.cancel(); NAT.stop(); }
 };
 if('speechSynthesis' in window){ try{speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=()=>{};}catch(e){} }
 const P={on:false,playing:false,items:[],idx:0,tok:0,auto:false,lock:null,pre:new Map(),nat:null,base:'es'};
@@ -725,20 +739,20 @@ function buildItems(from){
 async function playerStart(from){
   if(!CUR) return;
   const base=TTSLANG[CUR.lang]||CUR.lang; const nat=natVoice(base);
-  if(nat) window.Piper.audio();               /* unlock audio inside the tap */
+  if(nat) NAT.unlock();               /* unlock audio inside the tap */
   else if(!TTS.cap()&&!('speechSynthesis' in window)){toast(t('noTts'));return;}
   if(!nat&&!TTS.cap()&&'speechSynthesis' in window){ if(!speechSynthesis.getVoices().length) await new Promise(r=>setTimeout(r,400)); if(!TTS.voices(base).length) toast(t('noVoice')); }
   TTS.stop(); P.on=true; P.items=buildItems(from||1); P.idx=0; P.base=base; P.nat=nat; P.pre=new Map(); drawPlayer(); playerRun();
 }
-function synthAt(i){ if(!P.nat||i>=P.items.length) return null; const key=i+'|'+S.tts.rate; if(!P.pre.has(key)) P.pre.set(key,window.Piper.synth(P.nat,P.items[i].text,S.tts.rate)); return P.pre.get(key); }
+function synthAt(i){ if(!P.nat||i>=P.items.length) return null; const key=P.tok+'|'+i+'|'+S.tts.rate; if(!P.pre.has(key)){ const pr=NAT.prepare(P.nat,P.items[i].text,S.tts.rate,key); pr.catch(()=>{}); P.pre.set(key,pr); } return P.pre.get(key); }
 async function playerRun(){
   const tok=++P.tok; P.playing=true; drawPlayer(); wake(true);
   if(P.nat){ const lab=$('.player .plab'); if(lab) lab.textContent=t('loading');
-    try{ await window.Piper.load(P.nat); }catch(e){ if(tok===P.tok){ P.nat=null; toast(t('loadErr')); } } }
+    try{ await NAT.load(P.nat); }catch(e){ if(tok===P.tok){ P.nat=null; toast(t('loadErr')); } } }
   while(P.idx<P.items.length&&tok===P.tok){
     const it=P.items[P.idx]; markSpeaking(it.v);
     try{
-      if(P.nat){ const a=await synthAt(P.idx); synthAt(P.idx+1); if(tok!==P.tok) return; await window.Piper.play(a); }
+      if(P.nat){ const a=synthAt(P.idx); synthAt(P.idx+1); synthAt(P.idx+2); const x=await a; if(tok!==P.tok) return; await NAT.play(x); }
       else await TTS.speakSystem(it.text,P.base,S.tts.rate);
     }catch(e){ if(tok===P.tok){ P.playing=false; drawPlayer(); wake(false); } return; }
     if(tok!==P.tok) return; P.idx++;
@@ -762,7 +776,7 @@ function drawPlayer(){
     <div class="plab" aria-live="polite"></div>
     <button class="chip" id="pRate" aria-label="${t('speed')}">${S.tts.rate}×</button>
     <button class="pbtn" id="pStop" aria-label="${t('stop')}">${I.x}</button>`;
-  $('#pPlay').onclick=()=>{ if(P.playing) playerPause(); else { if(P.nat) window.Piper.audio(); playerRun(); } };
+  $('#pPlay').onclick=()=>{ if(P.playing) playerPause(); else { if(P.nat) NAT.unlock(); playerRun(); } };
   $('#pStop').onclick=playerStop;
   $('#pRate').onclick=()=>{const i=RATES.indexOf(S.tts.rate);S.tts.rate=RATES[(i+1)%RATES.length];save();P.pre=new Map();if(P.playing){P.tok++;TTS.stop();setTimeout(playerRun,60);}else drawPlayer();};
   markSpeaking(P.items[P.idx]?P.items[P.idx].v:null);
@@ -771,7 +785,7 @@ function drawPlayer(){
 async function openVoiceSheet(inPlace){
   const v=V(); const base=TTSLANG[v.lang]||v.lang; const list=hasPiper()?(window.Piper.VOICES[base]||[]):[];
   const sel=VC.nat[base]||'';
-  const row=x=>{ const dl=VC.dl[x.id], pr=VPROG[x.id];
+  const row=x=>{ const dl=dlMap()[x.id], pr=VPROG[x.id];
     return `<div class="voice ${sel===x.id&&dl?'on':''}"><div class="main"><b>${esc(x.name)}</b><div class="meta">${esc(x.info)} · ${x.mb} MB</div></div>
       ${pr!=null?`<span class="pill" id="vp-${x.id}">${pr}%</span>`:dl?`<button class="btn ghost small" data-try="${x.id}">${t('listen')}</button><button class="btn small ${sel===x.id?'':'ghost'}" data-use="${x.id}" aria-pressed="${sel===x.id}">${sel===x.id?'✓':t('voice')}</button><button class="icon-btn" data-rm="${x.id}" aria-label="${t('removeDl')}">${I.x}</button>`
         :`<button class="btn small" data-dl="${x.id}">${I.download.replace('<svg','<svg width="15" height="15" style="vertical-align:-3px"')} ${t('download')}</button>`}</div>`; };
@@ -790,13 +804,13 @@ async function openVoiceSheet(inPlace){
   const sh=openSheet(`${t('voice')} · ${LANGS[v.lang]}`,body,null,inPlace); sh.dataset.voice='1';
   const redraw=()=>{ if(document.querySelector('#layer .sheet[data-voice]')) openVoiceSheet(true); };
   sh.querySelectorAll('[data-dl]').forEach(b=>b.onclick=async()=>{ const id=b.dataset.dl; VPROG[id]=0; redraw();
-    let last=0; try{ await window.Piper.download(id,p=>{ const n=Math.round(p*100); if(n!==last){ last=n; VPROG[id]=n; const el=document.getElementById('vp-'+id); if(el) el.textContent=n+'%'; } });
-      VC.dl[id]=Date.now(); VC.nat[base]=id; saveVC(); toast(`${window.Piper.byId[id].name}: ${t('downloaded')}`); }
+    let last=0; try{ await NAT.download(id,p=>{ const n=Math.round(p*100); if(n!==last){ last=n; VPROG[id]=n; const el=document.getElementById('vp-'+id); if(el) el.textContent=n+'%'; } });
+      dlMap()[id]=Date.now(); VC.nat[base]=id; saveVC(); toast(`${window.Piper.byId[id].name}: ${t('downloaded')}`); }
     catch(e){ toast(t('dlFail')); } delete VPROG[id]; redraw(); });
   sh.querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>{ VC.nat[base]=b.dataset.use; saveVC(); redraw(); });
-  sh.querySelectorAll('[data-rm]').forEach(b=>b.onclick=async()=>{ const id=b.dataset.rm; await window.Piper.remove(id); delete VC.dl[id]; if(VC.nat[base]===id) delete VC.nat[base]; saveVC(); redraw(); });
-  sh.querySelectorAll('[data-try]').forEach(b=>b.onclick=async()=>{ window.Piper.audio(); const id=b.dataset.try; b.disabled=true; b.textContent=t('loading');
-    try{ const a=await window.Piper.synth(id,SAMPLE[base]||SAMPLE.en,S.tts.rate); b.textContent=t('listen'); b.disabled=false; await window.Piper.play(a); }catch(e){ b.textContent=t('listen'); b.disabled=false; toast(t('loadErr')); } });
+  sh.querySelectorAll('[data-rm]').forEach(b=>b.onclick=async()=>{ const id=b.dataset.rm; await NAT.remove(id); delete dlMap()[id]; if(VC.nat[base]===id) delete VC.nat[base]; saveVC(); redraw(); });
+  sh.querySelectorAll('[data-try]').forEach(b=>b.onclick=async()=>{ NAT.unlock(); const id=b.dataset.try; b.disabled=true; b.textContent=t('loading');
+    try{ if(P.on) playerStop(); await NAT.load(id); const x=await NAT.prepare(id,SAMPLE[base]||SAMPLE.en,S.tts.rate,'sample-'+Date.now()); b.textContent=t('listen'); b.disabled=false; await NAT.play(x); }catch(e){ b.textContent=t('listen'); b.disabled=false; toast(t('loadErr')); } });
   const us=sh.querySelector('#useSys'); if(us) us.onchange=()=>{ delete VC.nat[base]; saveVC(); redraw(); };
   const ns=sh.querySelector('#nvSel'); if(ns) ns.onchange=e=>{ if(e.target.value==='') delete VC.sys[base]; else VC.sys[base]=+e.target.value; saveVC(); };
   const vs=sh.querySelector('#vSel'); if(vs) vs.onchange=e=>{ if(e.target.value) S.tts.voice[base]=e.target.value; else delete S.tts.voice[base]; save(); };

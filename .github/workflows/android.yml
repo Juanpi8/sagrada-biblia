@@ -18,6 +18,17 @@ jobs:
       - run: npx cap add android
       - run: npx @capacitor/assets generate --android --iconBackgroundColor '#24543E' --splashBackgroundColor '#FBFBF9' || true
       - run: npx cap sync android
+      - name: Native voice engine (sherpa-onnx)
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          REL=$(curl -sfL -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/k2-fsa/sherpa-onnx/releases/latest)
+          TAG=$(echo "$REL" | jq -r .tag_name); echo "sherpa-onnx $TAG"
+          echo "$REL" | jq -r '.assets[].name' | grep -iE 'aar|android' | head -20
+          URL=$(echo "$REL" | jq -r '.assets[] | select(.name|test("\\.aar$")) | .browser_download_url' | grep -v -i 'java\|static' | head -1)
+          echo "AAR: $URL"
+          mkdir -p android/app/libs && curl -sfL "$URL" -o android/app/libs/sherpa-onnx.aar
+          curl -sfL "https://raw.githubusercontent.com/k2-fsa/sherpa-onnx/$TAG/sherpa-onnx/kotlin-api/Tts.kt" -o Tts.kt || true
+          python3 ci/patch-android.py
       - name: Build APK
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
